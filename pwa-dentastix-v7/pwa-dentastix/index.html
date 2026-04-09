@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<meta name="description" content="Calculadora de producción Dentastix y Rodeo 2026"/>
+<title>Producción 2026</title>
+<style>
+  :root {
+    --azul: #1F3864; --azul2: #2E75B6; --azul-light: #D6E4F0;
+    --naranja: #ED7D31; --bg: #F4F6FA; --card: #FFFFFF;
+    --text: #1a1a2e; --text2: #5a6070; --text3: #9aa0ad;
+    --border: rgba(0,0,0,0.09); --radius: 14px; --radius-sm: 9px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0f1117; --card:#1c2030; --text:#f0f2f8; --text2:#8b92a5; --text3:#555d70; --border:rgba(255,255,255,0.08); --azul-light:#1a2540; }
+  }
+  * { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+  html,body { height:100%; background:var(--bg); font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; color:var(--text); }
+  .bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--card); border-top:0.5px solid var(--border); display:flex; z-index:100; padding-bottom:env(safe-area-inset-bottom); }
+  .nav-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:10px 0 8px; border:none; background:none; color:var(--text3); font-size:10px; font-weight:500; cursor:pointer; gap:4px; transition:color 0.15s; }
+  .nav-btn.active { color:var(--azul); }
+  .nav-btn.active::after { content:''; display:block; width:4px; height:4px; border-radius:50%; background:var(--azul); margin:0 auto; position:absolute; bottom:6px; }
+  .nav-btn { position:relative; }
+  .nav-btn svg { width:22px; height:22px; }
+  .page { display:none; padding:0 0 80px; min-height:100vh; }
+  .page.active { animation:fadeIn 0.18s ease; }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+  .page.active { display:block; }
+  .page-header h1 { font-size:22px; font-weight:600; }
+  .page-header p { font-size:13px; opacity:0.65; margin-top:4px; }
+  .section-label { font-size:11px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.07em; padding:18px 20px 8px; }
+  .variety-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:0 16px; }
+  .vbtn { padding:11px 4px; border:1.5px solid var(--border); border-radius:var(--radius-sm); background:var(--card); font-size:12px; font-weight:600; color:var(--text2); cursor:pointer; text-align:center; transition:all 0.12s; }
+  .vbtn .vtag { font-size:10px; font-weight:400; display:block; margin-top:2px; color:var(--text3); }
+  .vbtn.active { background:var(--azul); border-color:var(--azul); color:#fff; }
+  .vbtn.active .vtag { color:rgba(255,255,255,0.6); }
+  .pills { display:flex; flex-wrap:wrap; gap:6px; padding:10px 16px; }
+  .pill { font-size:11px; padding:5px 10px; border-radius:20px; background:var(--card); border:0.5px solid var(--border); color:var(--text2); }
+  .pill strong { color:var(--text); }
+  .input-card { background:var(--card); border-radius:var(--radius); margin:4px 16px 0; border:0.5px solid var(--border); overflow:hidden; }
+  .input-row { display:flex; align-items:center; padding:13px 16px; border-bottom:0.5px solid var(--border); }
+  .input-row:last-child { border-bottom:none; }
+  .input-row label { flex:1; font-size:14px; color:var(--text2); }
+  .input-row .iw { display:flex; align-items:center; gap:6px; }
+  .input-row input { width:88px; text-align:right; font-size:16px; font-weight:600; padding:6px 8px; border:1px solid var(--border); border-radius:8px; background:var(--bg); color:var(--text); }
+  .input-row .unit { font-size:12px; color:var(--text3); min-width:22px; }
+  .results-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; padding:8px 16px; }
+  .rcard { background:var(--card); border-radius:var(--radius); padding:14px 16px; border:0.5px solid var(--border); }
+  .rcard.main { background:var(--azul); border-color:var(--azul); }
+  .rcard .rl { font-size:11px; color:var(--text3); margin-bottom:4px; }
+  .rcard.main .rl { color:rgba(255,255,255,0.55); }
+  .rcard .rv { font-size:26px; font-weight:700; color:var(--text); line-height:1; }
+  .rcard.main .rv { color:#fff; }
+  .rcard .rs { font-size:11px; color:var(--text3); margin-top:4px; }
+  .rcard.main .rs { color:rgba(255,255,255,0.45); }
+  .insumos-card { background:var(--card); border-radius:var(--radius); margin:4px 16px 0; border:0.5px solid var(--border); overflow:hidden; }
+  .ins-header { padding:11px 16px; font-size:12px; font-weight:600; color:var(--text3); background:var(--bg); border-bottom:0.5px solid var(--border); }
+  .ins-row { display:flex; justify-content:space-between; align-items:center; padding:11px 16px; border-bottom:0.5px solid var(--border); }
+  .ins-row:last-child { border-bottom:none; }
+  .ins-row .in { font-size:13px; color:var(--text2); }
+  .ins-row .iv { font-size:13px; font-weight:600; color:var(--text); }
+  .reset-btn { display:block; width:calc(100% - 32px); margin:8px 16px 0; padding:13px; border:1.5px solid var(--border); border-radius:var(--radius-sm); background:transparent; font-size:14px; font-weight:500; color:var(--text2); cursor:pointer; }
+  .datos-card { background:var(--card); border-radius:var(--radius); margin:0 16px 10px; border:0.5px solid var(--border); overflow:hidden; }
+  .datos-card-header { padding:14px 16px; font-size:14px; font-weight:700; color:var(--text); background:var(--card); display:flex; align-items:center; justify-content:space-between; cursor:pointer; user-select:none; }
+  .datos-card-header:active { background:var(--bg); }
+  .datos-chevron { font-size:12px; color:var(--text3); transition:transform 0.2s; }
+  .datos-card.open .datos-chevron { transform:rotate(180deg); }
+  .datos-body { display:none; border-top:0.5px solid var(--border); }
+  .datos-card.open .datos-body { display:block; }
+  .datos-pill { font-size:11px; background:var(--azul-light); color:var(--azul); padding:2px 8px; border-radius:10px; font-weight:600; }
+  .datos-row { display:flex; justify-content:space-between; padding:10px 16px; border-bottom:0.5px solid var(--border); font-size:13px; }
+  .datos-row:last-child { border-bottom:none; }
+  .datos-row .dk { color:var(--text2); }
+  .datos-row .dv { font-weight:600; color:var(--text); }
+  /* SEARCH */
+  .search-wrap { padding:10px 16px 4px; }
+  .search-wrap input { width:100%; padding:10px 14px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--card); color:var(--text); font-size:14px; }
+  /* CODIGOS */
+  .cod-group { margin:0 16px 14px; }
+  .cod-group-title { font-size:11px; font-weight:700; color:var(--azul); text-transform:uppercase; letter-spacing:0.07em; padding:10px 0 6px; border-bottom:2px solid var(--azul-light); margin-bottom:6px; }
+  .cod-card { background:var(--card); border-radius:var(--radius-sm); border:0.5px solid var(--border); overflow:hidden; margin-bottom:6px; }
+  .cod-row { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:0.5px solid var(--border); gap:12px; }
+  .cod-row:last-child { border-bottom:none; }
+  .cod-desc { font-size:13px; color:var(--text2); flex:1; }
+  .cod-num { font-size:13px; font-weight:700; white-space:nowrap; background:#2E75B6; padding:3px 8px; border-radius:6px; color:#ffffff; }
+  .cod-sigla { font-size:11px; font-weight:700; color:#fff; background:var(--azul); padding:2px 7px; border-radius:5px; white-space:nowrap; }
+  .theme-toggle { position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.15); border:none; border-radius:20px; padding:6px 12px; color:#fff; font-size:12px; cursor:pointer; display:flex; align-items:center; gap:5px; }
+  .page-header { position:relative; background:var(--azul); color:#fff; padding:52px 20px 20px; }
+  .empty-search { text-align:center; padding:40px 20px; color:var(--text3); font-size:14px; }
+  .cod-manager { margin:0 16px 20px; border:0.5px solid var(--border); border-radius:var(--radius); overflow:hidden; background:var(--card); }
+  .cod-mgr-tabs { display:flex; border-bottom:0.5px solid var(--border); }
+  .mgr-tab { flex:1; padding:11px; border:none; background:none; font-size:13px; font-weight:500; color:var(--text3); cursor:pointer; }
+  .mgr-tab.active { color:var(--azul); border-bottom:2px solid var(--azul); background:var(--azul-light); }
+  .mgr-panel { padding:14px 16px; }
+  .mgr-field { margin-bottom:12px; }
+  .mgr-field label { display:block; font-size:11px; font-weight:600; color:var(--text3); text-transform:uppercase; letter-spacing:0.05em; margin-bottom:5px; }
+  .mgr-field input, .mgr-field select { width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--bg); color:var(--text); font-size:14px; }
+  .mgr-save-btn { width:100%; padding:12px; background:var(--azul); color:#fff; border:none; border-radius:var(--radius-sm); font-size:14px; font-weight:600; cursor:pointer; }
+  .mgr-edit-item { display:flex; align-items:center; gap:8px; padding:10px 0; border-bottom:0.5px solid var(--border); }
+  .mgr-edit-item:last-child { border-bottom:none; }
+  .mgr-edit-info { flex:1; }
+  .mgr-edit-desc { font-size:13px; color:var(--text); }
+  .mgr-edit-code { font-size:11px; color:var(--text3); }
+  .mgr-del-btn { background:#fee2e2; border:none; border-radius:6px; padding:6px 10px; color:#dc2626; font-size:12px; font-weight:600; cursor:pointer; }
+  .mgr-edit-btn { background:var(--azul-light); border:none; border-radius:6px; padding:6px 10px; color:var(--azul); font-size:12px; font-weight:600; cursor:pointer; }
+  .dark { --bg:#0f1117; --card:#1c2030; --text:#f0f2f8; --text2:#8b92a5; --text3:#555d70; --border:rgba(255,255,255,0.08); --azul-light:#1a2540; }
+.light {
+  --bg:#F4F6FA;
+  --card:#FFFFFF;
+  --text:#1a1a2e;
+  --text2:#5a6070;
+  --text3:#9aa0ad;
+  --border:rgba(0,0,0,0.09);
+  --azul-light:#D6E4F0;
+}
+
+.grid {
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  padding:8px 16px;
+}  .hcard { background:var(--card); border-radius:var(--radius); padding:14px 16px; border:0.5px solid var(--border); }
+  .hcard.main2 { background:var(--azul2); border-color:var(--azul2); }
+  .hcard.accent { background:var(--naranja); border-color:var(--naranja); }
+  .hcard .hl { font-size:11px; color:var(--text3); margin-bottom:4px; }
+  .hcard.main2 .hl, .hcard.accent .hl { color:rgba(255,255,255,0.6); }
+  .hcard .hv { font-size:24px; font-weight:700; color:var(--text); line-height:1; }
+  .hcard.main2 .hv, .hcard.accent .hv { color:#fff; }
+  .hcard .hs { font-size:10px; color:var(--text3); margin-top:4px; }
+  .hcard.main2 .hs, .hcard.accent .hs { color:rgba(255,255,255,0.5); }
+
+  .inicio-header { background:linear-gradient(160deg, #1F3864 0%, #2E75B6 100%); padding:52px 20px 32px; text-align:center; position:relative; }
+  .theme-toggle-top { position:absolute; top:16px; right:16px; background:rgba(255,255,255,0.15); border:none; border-radius:20px; padding:7px 13px; color:#fff; font-size:16px; cursor:pointer; }
+  .pedigree-logo { width:140px; height:140px; border-radius:7%; margin-bottom:16px; object-fit:contain; background:#fff; padding:8px; border:4px solid rgba(255,255,255,0.4); box-shadow:0 4px 20px rgba(0,0,0,0.25); }
+  .inicio-title { font-size:26px; font-weight:700; color:#fff; margin-bottom:4px; }
+  .inicio-sub { font-size:13px; color:rgba(255,255,255,0.65); }
+  .inicio-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:16px; }
+  .inicio-btn { background:var(--card); border:0.5px solid var(--border); border-radius:var(--radius); padding:20px 12px 16px; display:flex; flex-direction:column; align-items:center; gap:10px; cursor:pointer; transition:transform 0.12s, box-shadow 0.12s; text-align:center; box-shadow:0 2px 8px rgba(0,0,0,0.05); }
+  .inicio-btn:active { transform:scale(0.96); box-shadow:none; }
+  .inicio-btn-wide { grid-column:1/-1; flex-direction:row; align-items:center; text-align:left; gap:14px; padding:16px 18px; }
+  .ib-icon { width:46px; height:46px; background:linear-gradient(135deg,#2E75B6,#1F3864); border-radius:13px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .ib-icon svg { width:22px; height:22px; stroke:#fff; }
+  .ib-label { font-size:13px; font-weight:700; color:var(--text); }
+  .ib-desc { font-size:11px; color:var(--text3); line-height:1.4; }
+  .inicio-btn-wide .ib-label { font-size:14px; }
+  .inicio-btn-wide .ib-icon { background:linear-gradient(135deg,#ED7D31,#c45e15); }
+  .cyv-card { background:var(--card); border-radius:var(--radius); margin:4px 16px 0; border:0.5px solid var(--border); overflow:hidden; }
+  .cyv-header { padding:10px 16px; font-size:12px; font-weight:600; color:var(--text3); background:var(--bg); border-bottom:0.5px solid var(--border); }
+  .cyv-row { display:flex; justify-content:space-between; align-items:center; padding:10px 16px; border-bottom:0.5px solid var(--border); }
+  .cyv-row:last-child { border-bottom:none; }
+  .cyv-row.cyv-total { background:var(--azul-light); }
+  .cyv-name { font-size:13px; color:var(--text2); flex:1; padding-right:8px; }
+  .cyv-val { font-size:13px; font-weight:700; color:var(--text); white-space:nowrap; background:#2E75B6; color:#fff; padding:3px 9px; border-radius:6px; }
+</style>
+</head>
+<body>
+
+<!-- INICIO -->
+<div class="page active" id="page-inicio">
+  <div class="inicio-header">
+    <button class="theme-toggle-top" onclick="toggleTheme()" id="theme-btn-top">🌙</button>
+    <img src="data:image/jpeg;base64,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" alt="Pedigree" class="pedigree-logo"/>
+    <h1 class="inicio-title">Care &amp; Treats</h1>
+    <p class="inicio-sub">Herramientas de producción 2026</p>
+  </div>
+  <div class="inicio-grid">
+    <button class="inicio-btn" onclick="showPage('calc')">
+      <span class="ib-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 7h8M8 12h8M8 17h5"/></svg>
+      </span>
+      <span class="ib-label">Calculadora</span>
+      <span class="ib-desc">Pallets, bultos, carros </span>
+    </button>
+    <button class="inicio-btn" onclick="showPage('datos')">
+      <span class="ib-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="7" rx="8" ry="3"/><path d="M4 7v5c0 1.66 3.58 3 8 3s8-1.34 8-3V7"/><path d="M4 12v5c0 1.66 3.58 3 8 3s8-1.34 8-3v-5"/></svg>
+      </span>
+      <span class="ib-label">Datos Producción</span>
+      <span class="ib-desc">Especificaciones por variedad</span>
+    </button>
+    <button class="inicio-btn" onclick="showPage('codigos')">
+      <span class="ib-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/><circle cx="6" cy="9" r="1" fill="currentColor"/><circle cx="6" cy="12" r="1" fill="currentColor"/><circle cx="6" cy="15" r="1" fill="currentColor"/></svg>
+      </span>
+      <span class="ib-label">Códigos</span>
+      <span class="ib-desc">Materiales y productos</span>
+    </button>
+    <button class="inicio-btn" onclick="showPage('harina')">
+      <span class="ib-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="6" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="6" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="6" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
+      </span>
+      <span class="ib-label">Kg de Harina</span>
+      <span class="ib-desc">Cálculo batch + bunker</span>
+    </button>
+    <button class="inicio-btn inicio-btn-wide" onclick="showPage('carneyvisera')">
+      <span class="ib-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M8 12h8M12 8v8"/></svg>
+      </span>
+      <span class="ib-label">Carne y Víscera</span>
+      <span class="ib-desc">Fórmulas Rodeo Carne, Pollo y KF Dentastix</span>
+    </button>
+  </div>
+</div>
+
+<!-- CALCULADORA -->
+<div class="page" id="page-calc">
+  <div class="page-header"><h1>Calculadora</h1><p>Dentastix / Rodeo · 2026</p></div>
+  <div class="section-label">Variedad</div>
+  <div class="variety-grid" id="variety-grid"></div>
+  <div class="pills" id="specs-pills"></div>
+  <div class="input-card">
+    <div class="input-row">
+      <label>Kilogramos</label>
+      <div class="iw"><input type="number" id="inp-kg" min="0" step="10" value="" placeholder="0"/><span class="unit">kg</span></div>
+    </div>
+  </div>
+  <div class="section-label">Resultados</div>
+  <div class="results-grid">
+    <div class="rcard main"><div class="rl">Pallets</div><div class="rv" id="r-pallets">—</div><div class="rs" id="r-pallets-sub"> </div></div>
+    <div class="rcard"><div class="rl">Bultos</div><div class="rv" id="r-bultos">—</div><div class="rs" id="r-bultos-sub"> </div></div>
+    <div class="rcard"><div class="rl">Display</div><div class="rv" id="r-display">—</div><div class="rs" id="r-display-sub"> </div></div>
+    <div class="rcard"><div class="rl">Carros</div><div class="rv" id="r-carros">—</div><div class="rs" id="r-carros-sub"> </div></div>
+  </div>
+  <div class="section-label">Insumos totales</div>
+  <div class="insumos-card">
+    <div class="ins-header">Cantidades calculadas sobre bultos</div>
+    <div class="ins-row"><span class="in">Bobina de film</span><span class="iv" id="i-bobina">—</span></div>
+    <div class="ins-row"><span class="in">KF (Semielaborado)</span><span class="iv" id="i-kf">—</span></div>
+    <div class="ins-row"><span class="in">Tinta inkjet</span><span class="iv" id="i-tinta-inj">—</span></div>
+    <div class="ins-row"><span class="in">Tinta marsh</span><span class="iv" id="i-tinta-mar">—</span></div>
+    <div class="ins-row"><span class="in">Solvente inkjet</span><span class="iv" id="i-solvente">—</span></div>
+  </div>
+<button class="reset-btn" onclick="resetCalc()">Limpiar cálculo</button>
+</div>
+
+<!-- DATOS -->
+<div class="page" id="page-datos">
+  <div class="page-header"><h1>Datos por variedad</h1><p>Variedades y especificaciones</p></div>
+  <div class="section-label">Referencia por variedad</div>
+  <div id="datos-list"></div>
+</div>
+
+<!-- CODIGOS -->
+<div class="page" id="page-codigos">
+  <div class="page-header"><h1>Códigos</h1><p>Materiales y productos terminados</p>
+    <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn">☀️ Claro</button>
+  </div>
+  <div class="search-wrap">
+    <input type="search" id="cod-search" placeholder="Buscar por código o descripción..." oninput="filterCodigos()"/>
+  </div>
+  <div id="codigos-list"></div>
+
+  <div class="section-label" style="margin-top:8px">Gestionar códigos</div>
+  <div class="cod-manager">
+    <div class="cod-mgr-tabs">
+      <button class="mgr-tab active" onclick="switchMgrTab('agregar',this)">Agregar</button>
+      <button class="mgr-tab" onclick="switchMgrTab('editar',this)">Editar / Borrar</button>
+    </div>
+
+    <div id="mgr-agregar" class="mgr-panel">
+      <div class="mgr-field"><label>Grupo</label>
+        <select id="mgr-grupo">
+          <option>Productos terminados</option>
+          <option>Film / Bobinas</option>
+          <option>Displays</option>
+          <option>Cajas</option>
+          <option>KF (semielaborado)</option>
+          <option>Líquidos y materias primas</option>
+          <option>Insumos de Empaques</option>
+          <option>Tintas y solventes</option>
+          <option>Rework / PT R24</option>
+          <option>— Nuevo grupo —</option>
+        </select>
+      </div>
+      <div id="mgr-nuevo-grupo-wrap" style="display:none" class="mgr-field">
+        <label>Nombre del nuevo grupo</label>
+        <input type="text" id="mgr-nuevo-grupo" placeholder="Ej: Empaques nuevos"/>
+      </div>
+      <div class="mgr-field"><label>Código SAP</label><input type="text" id="mgr-codigo" placeholder="Ej: 1234567"/></div>
+      <div class="mgr-field"><label>Descripción</label><input type="text" id="mgr-desc" placeholder="Ej: Film DTX Razas Med 1u"/></div>
+      <div class="mgr-field"><label>Sigla (opcional)</label><input type="text" id="mgr-sigla" placeholder="Ej: DRPX1"/></div>
+      <button class="mgr-save-btn" onclick="agregarCodigo()">Agregar código</button>
+    </div>
+
+    <div id="mgr-editar" class="mgr-panel" style="display:none">
+      <div class="mgr-field"><label>Buscar para editar/borrar</label>
+        <input type="text" id="mgr-buscar-edit" placeholder="Código o descripción..." oninput="buscarParaEditar()"/>
+      </div>
+      <div id="mgr-edit-results"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HARINA -->
+<div class="page" id="page-harina">
+  <div class="page-header"><h1>Kg de Harina</h1><p>Cálculo por batch + bunker</p></div>
+
+  <div class="section-label">Parámetros del batch</div>
+  <div class="input-card">
+    <div class="input-row">
+     
+      <label>KG/H extrusora</label>
+      <div class="iw"><input type="number" id="h-kgh" min="0" step="1" value="0" oninput="saveHarinaPrefs();calcHarina()"/><span class="unit">kg/h</span></div>
+    </div>
+    <div class="input-row">
+      <label>Hna por batch</label>
+      <div class="iw"><input type="number" id="h-hna" min="0" step="1" value="0" oninput="saveHarinaPrefs();calcHarina()"/><span class="unit">kg</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Resultado — Solo batch</div>
+  <div class="harina-results">
+    <div class="hcard">
+      <div class="hl">Kg de harina</div>
+      <div class="hv" id="h-res-kghna">—</div>
+      <div class="hs">batch × 150</div>
+    </div>
+    <div class="hcard">
+      <div class="hl">Horas con hna</div>
+      <div class="hv" id="h-res-hs">—</div>
+      <div class="hs">kg hna ÷ hna/bat</div>
+    </div>
+    <div class="hcard main2">
+      <div class="hl">KG total</div>
+      <div class="hv" id="h-res-kgtotal">—</div>
+      <div class="hs">KG/H × horas</div>
+    </div>
+    <div class="hcard">
+      <div class="hv" id="h-res-kphora">—</div>
+      <div class="hs">KG/H × horas/batch</div>
+    </div>
+  </div>
+
+  <div class="section-label">Kg en bunker </div>
+  <div class="input-card">
+    <div class="input-row">
+       <label>Cantidad de batches</label>
+      <div class="iw"><input type="number" id="h-batch" min="0" step="1" value="0" oninput="saveHarinaPrefs();calcHarina()"/><span class="unit">bat</span></div>
+    </div>
+    <div class="input-row">
+      <label>Kg en bunker</label>
+      <div class="iw"><input type="number" id="h-bunker" min="0" step="1" value="0" oninput="calcHarina()"/><span class="unit">kg</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Resultado — Batch + Bunker</div>
+  <div class="harina-results">
+    <div class="hcard">
+      <div class="hl">Kg hna total</div>
+      <div class="hv" id="h-res2-kghna">—</div>
+      <div class="hs">batch + bunker</div>
+    </div>
+    <div class="hcard">
+      <div class="hl">Horas totales</div>
+      <div class="hv" id="h-res2-hs">—</div>
+      <div class="hs">kg total ÷ hna/bat</div>
+    </div>
+    <div class="hcard main2">
+      <div class="hl">KG total final</div>
+      <div class="hv" id="h-res2-kgtotal">—</div>
+      <div class="hs">KG/H × horas totales</div>
+    </div>
+    <div class="hcard accent">
+      <div class="hl">Diferencia bunker</div>
+      <div class="hv" id="h-res2-diff">—</div>
+      <div class="hs">extra por bunker</div>
+    </div>
+  </div>
+
+  <button class="reset-btn" onclick="resetHarina()">Limpiar cálculo</button>
+</div>
+
+<!-- CARNE Y VISERA -->
+<div class="page" id="page-carneyvisera">
+  <div class="page-header"><h1>Carne y Víscera</h1><p>Fórmulas Rodeo · KF Dentastix</p></div>
+
+  <!-- RODEO CARNE -->
+  <div class="section-label">Rodeo Carne</div>
+  <div class="input-card">
+    <div class="input-row"><label>Kg totales</label><div class="iw"><input type="number" id="rc-kg" value="0" oninput="calcCYV()"/><span class="unit">kg</span></div></div>
+  </div>
+  <div class="cyv-card" style="margin-top:8px">
+    <div class="cyv-header">Resultados</div>
+    <div class="cyv-row cyv-total"><span class="cyv-name">Pallets (÷ 210 kg)</span><span class="cyv-val" id="rc-plt">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Líquido Baja Presión</span><span class="cyv-val" id="rc-liq-baja">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Líquido Oscuro</span><span class="cyv-val" id="rc-liq-osc">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Líquido Blanco</span><span class="cyv-val" id="rc-liq-blanc">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Hna Carne y Hueso Tamizada</span><span class="cyv-val" id="rc-hna">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Preblend Rodeo</span><span class="cyv-val" id="rc-preblend">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">SPF (coating)</span><span class="cyv-val" id="rc-spf">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Powder Palatant C&T SC</span><span class="cyv-val" id="rc-palatant">—</span></div>
+  </div>
+
+  <!-- RODEO POLLO -->
+  <div class="section-label">Rodeo Pollo</div>
+  <div class="input-card">
+    <div class="input-row"><label>Kg totales</label><div class="iw"><input type="number" id="rp-kg" value="0" oninput="calcCYV()"/><span class="unit">kg</span></div></div>
+  </div>
+  <div class="cyv-card" style="margin-top:8px">
+    <div class="cyv-header">Resultados</div>
+    <div class="cyv-row cyv-total"><span class="cyv-name">Pallets (÷ 210 kg)</span><span class="cyv-val" id="rp-plt">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Hna Vísceras Tamizada C&T</span><span class="cyv-val" id="rp-hna-vis">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Líquido Baja Presión</span><span class="cyv-val" id="rp-liq-baja">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Líquido Oscuro</span><span class="cyv-val" id="rp-liq-osc">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Líquido Liviano</span><span class="cyv-val" id="rp-liq-liv">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Preblend Rodeo</span><span class="cyv-val" id="rp-preblend">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Coating Powder SC</span><span class="cyv-val" id="rp-coating">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Powder Palatant C&T SC</span><span class="cyv-val" id="rp-palatant">—</span></div>
+  </div>
+
+  <!-- KF DENTASTIX -->
+  <div class="section-label">KF Dentastix</div>
+  <div class="input-card">
+    <div class="input-row"><label>Kg totales KF</label><div class="iw"><input type="number" id="kf-kg" value="0" oninput="calcCYV()"/><span class="unit">kg</span></div></div>
+  </div>
+  <div class="cyv-card" style="margin-top:8px">
+    <div class="cyv-header">Resultados</div>
+    <div class="cyv-row"><span class="cyv-name">Sulfato de Zinc</span><span class="cyv-val" id="kf-zinc">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Dentastix Mix de Líquidos</span><span class="cyv-val" id="kf-mix-liq">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Preblend Dentastix</span><span class="cyv-val" id="kf-preblend">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Preblend Dentastix Micro</span><span class="cyv-val" id="kf-preblend-micro">—</span></div>
+  </div>
+
+  <!-- DENTASTIX MIX DE LIQUIDOS -->
+  <div class="section-label">Dentastix Mix de Líquidos</div>
+  <div class="input-card">
+    <div class="input-row"><label>Kg totales Mix</label><div class="iw"><input type="number" id="dm-kg" value="0" oninput="calcCYV()"/><span class="unit">kg</span></div></div>
+  </div>
+  <div class="cyv-card" style="margin-top:8px">
+    <div class="cyv-header">Resultados</div>
+    <div class="cyv-row"><span class="cyv-name">Sabor Pollo Ahumado</span><span class="cyv-val" id="dm-pollo">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Colorante Caramelo en Polvo</span><span class="cyv-val" id="dm-caramelo">—</span></div>
+    <div class="cyv-row"><span class="cyv-name">Glicerina</span><span class="cyv-val" id="dm-glicerina">—</span></div>
+  </div>
+
+  <button class="reset-btn" onclick="resetCYV()" style="margin-top:12px">Limpiar cálculo</button>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" id="nav-inicio" onclick="showPage('inicio')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+    Inicio
+  </button>
+  <button class="nav-btn" id="nav-calc" onclick="showPage('calc')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 7h8M8 12h8M8 17h5"/></svg>
+    Calcular
+  </button>
+  <button class="nav-btn" id="nav-datos" onclick="showPage('datos')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="7" rx="8" ry="3"/><path d="M4 7v5c0 1.66 3.58 3 8 3s8-1.34 8-3V7"/><path d="M4 12v5c0 1.66 3.58 3 8 3s8-1.34 8-3v-5"/></svg>
+    Datos
+  </button>
+  <button class="nav-btn" id="nav-codigos" onclick="showPage('codigos')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/><circle cx="6" cy="9" r="1" fill="currentColor"/><circle cx="6" cy="12" r="1" fill="currentColor"/><circle cx="6" cy="15" r="1" fill="currentColor"/></svg>
+    Códigos
+  </button>
+  <button class="nav-btn" id="nav-harina" onclick="showPage('harina')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="6" cy="6" r="2" fill="currentColor" stroke="none"/><circle cx="6" cy="12" r="2" fill="currentColor" stroke="none"/><circle cx="6" cy="18" r="2" fill="currentColor" stroke="none"/></svg>
+    Harina
+  </button>
+</nav>
+
+<script>
+const VARIETIES = [
+  { id:"DRPX1", label:"DRP X1", tag:"Peq 1u", kgBulto:0.628, kgPallet:94.2,   bultosPallet:150, paqDisplay:20, bobina:0.038, kf:0.644, tInj:0.015, tMar:0.041, solv:0.065, kgCarro:40.1 },
+  { id:"DRPX3", label:"DRP X3", tag:"Peq 3u", kgBulto:0.942, kgPallet:141.3,  bultosPallet:150, paqDisplay:10, bobina:0.032, kf:0.966, tInj:0.015, tMar:0.041, solv:0.065, kgCarro:40.1 },
+  { id:"DRPX7", label:"DRP X7", tag:"Peq 7u", kgBulto:1.76,  kgPallet:200.64, bultosPallet:114, paqDisplay:8,  bobina:0.04,  kf:1.804, tInj:0.015, tMar:0.041, solv:0.065, kgCarro:40.1 },
+  { id:"DRMX1", label:"DRM X1", tag:"Med 1u", kgBulto:0.925, kgPallet:138.75, bultosPallet:150, paqDisplay:18, bobina:0.045, kf:0.949, tInj:0.015, tMar:0.041, solv:0.065, kgCarro:42.4 },
+  { id:"DRMX3", label:"DRM X3", tag:"Med 3u", kgBulto:1.542, kgPallet:231.3,  bultosPallet:150, paqDisplay:10, bobina:0.041, kf:1.581, tInj:0.015, tMar:0.041, solv:0.065, kgCarro:42.4 },
+  { id:"DRMX7", label:"DRM X7", tag:"Med 7u", kgBulto:2.878, kgPallet:328.09, bultosPallet:114, paqDisplay:8,  bobina:0.049, kf:2.972, tInj:0.015, tMar:0.041, solv:0.065, kgCarro:42.4 },
+  { id:"DRGX1", label:"DRG X1", tag:"Gde 1u", kgBulto:1.386, kgPallet:207.9,  bultosPallet:150, paqDisplay:18, bobina:0.052, kf:0.949, tInj:0.015, tMar:0.041, solv:0.065, kgCarro:48.6 },
+  { id:"DRGX3", label:"DRG X3", tag:"Gde 3u", kgBulto:2.31,  kgPallet:346.5,  bultosPallet:150, paqDisplay:10, bobina:0.048, kf:0.644, tInj:0.015, tMar:0.041, solv:0,     kgCarro:48.6 },
+  { id:"DRGX7", label:"DRG X7", tag:"Gde 7u", kgBulto:3.78,  kgPallet:378,    bultosPallet:100, paqDisplay:7,  bobina:0.051, kf:0,     tInj:0.015, tMar:0,     solv:0,     kgCarro:48.6 },
+  { id:"Rodeo", label:"Rodeo",  tag:"4u",     kgBulto:1.4,   kgPallet:210,    bultosPallet:150, paqDisplay:10, bobina:0.039, kf:1.435, tInj:0.015, tMar:0.041, solv:0.065, kgCarro:35.3 },
+];
+
+const CODIGOS = {
+  "Productos terminados": [
+    { codigo:"10235170", desc:"Dentastix Razas Pequeñas x1", sigla:"DRPX1" },
+    { codigo:"10235171", desc:"Dentastix Razas Pequeñas x3", sigla:"DRPX3" },
+    { codigo:"10235172", desc:"Dentastix Razas Pequeñas x7", sigla:"DRPX7" },
+    { codigo:"10235173", desc:"Dentastix Razas Medianas x1", sigla:"DRMX1" },
+    { codigo:"10235174", desc:"Dentastix Razas Medianas x3", sigla:"DRMX3" },
+    { codigo:"10235175", desc:"Dentastix Razas Medianas x7", sigla:"DRMX7" },
+    { codigo:"16265815", desc:"Dentastix Razas Grandes x1",  sigla:"DRGX1" },
+    { codigo:"10265816", desc:"Dentastix Razas Grandes x3",  sigla:"DRGX3" },
+    { codigo:"10265817", desc:"Dentastix Razas Grandes x7",  sigla:"DRGX7" },
+    { codigo:"10235177", desc:"Rodeo Pollo",                 sigla:"RPO"   },
+    { codigo:"10235176", desc:"Rodeo Carne",                 sigla:"RCA"   },
+  ],
+  "Film / Bobinas": [
+    { codigo:"1503146",  desc:"Film Dentastix razas peq 1 unidad" },
+    { codigo:"1503148",  desc:"Film Dentastix Razas Pequeñas RE20 3 unidad" },
+    { codigo:"1503240",  desc:"Film Dentastix razas Pequeñas 7 unidad" },
+    { codigo:"1503147",  desc:"Film Dentastix razas Medianas 1 unidad" },
+    { codigo:"1503149",  desc:"Film Dentastix Razas Medianas RE20 3 unidad" },
+    { codigo:"1503241",  desc:"Film Dentastix razas Medianas 7 unidad" },
+    { codigo:"1503242",  desc:"Film Dentastix razas Grandes 1 unidad" },
+    { codigo:"1503243",  desc:"Film Dentastix Razas Grandes RE20 3 unidad" },
+    { codigo:"1503244",  desc:"Film Dentastix razas Grandes 7 unidad" },
+    { codigo:"1503245",  desc:"Film Rodeo Carne RE20 4 units" },
+    { codigo:"5104820",  desc:"Film Rodeo Carne RE20 4 units (nuevo)" },
+    { codigo:"1503247",  desc:"Film Rodeo Pollo RE20 4 units" },
+    { codigo:"5104716",  desc:"Film Dentastix Razas Med RE20 1 unidad" },
+    { codigo:"5104720",  desc:"Film Dentastix Razas Large RE20 3 unidad" },
+  ],
+  "Displays": [
+    { codigo:"1503291",  desc:"Display Dentastix razas Pequeñas x 1u" },
+    { codigo:"1503292",  desc:"Display Dentastix razas Pequeñas x 3u" },
+    { codigo:"1503293",  desc:"Display Dentastix razas Pequeñas x 7u" },
+    { codigo:"1424209",  desc:"Display Dentastix razas Medianas x 1u" },
+    { codigo:"1424207",  desc:"Display Dentastix razas Medianas x 3u" },
+    { codigo:"1424211",  desc:"Display Dentastix razas Medianas x 7u" },
+    { codigo:"5059239",  desc:"Display DTX Razas Grandes 18 x 1 unidad" },
+    { codigo:"5059240",  desc:"Display DTX Razas Grandes 10 x 3 unidades" },
+    { codigo:"5104907",  desc:"Display DTX Razas Grandes 10 x 3 unidades" },
+    { codigo:"5059241",  desc:"Display DTX Razas Grandes 7 x 7 unidades" },
+    { codigo:"1503294",  desc:"Display Rodeo Carne 10 x 4 unidades RE20" },
+    { codigo:"5104821",  desc:"Display Rodeo Carne 10 x 4 unidades RE20" },
+    { codigo:"1503295",  desc:"Display Rodeo Pollo 10 x 4 unidades RE20" },
+    { codigo:"5104729",  desc:"Display Rodeo Pollo 10 x 4 unidades RE20" },
+    { codigo:"5104903",  desc:"Display DTX Razas Med 18 x 1un R24" },
+  ],
+  "Cajas": [
+    { codigo:"1503248",  desc:"Caja DTX Razas P/M 1&3 unid RE20 ES-PO" },
+    { codigo:"5104725",  desc:"Caja DTX Razas P/M 1 & 3 unidades RE20" },
+    { codigo:"1503249",  desc:"Caja DTX Razas P/M 7 unidades RE20" },
+    { codigo:"5059279",  desc:"Caja DTX Razas Grandes 1 & 3 unidades" },
+    { codigo:"5059280",  desc:"Caja DTX Razas Grandes 7 unidades" },
+    { codigo:"1503290",  desc:"Caja Rodeo 4 unidades RE20" },
+    { codigo:"5104730",  desc:"Cajas Rodeo 4 unidades RE20" },
+  ],
+  "KF (Kraft Film)": [
+    { codigo:"1429123",  desc:"KF Denta",          sigla:"Alt: 11" },
+    { codigo:"1367109",  desc:"KF Rodeo Pollo",     sigla:"Alt: 7"  },
+    { codigo:"1367043",  desc:"KF Rodeo Carne",     sigla:"Alt: 7"  },
+  ],
+  "Líquidos y materias primas": [
+    { codigo:"1414196",  desc:"Líquido Denta Baja",             sigla:"Alt: 8" },
+    { codigo:"1415533",  desc:"Líquido Rodeo Pollo Baja",       sigla:"Alt: 2" },
+    { codigo:"1415534",  desc:"Líquido Rodeo Carne Baja",       sigla:"Alt: 2" },
+    { codigo:"1415535",  desc:"Líquido Rodeo Carne Alta Oscuro",sigla:"Alt: 3" },
+    { codigo:"1415536",  desc:"Líquido Rodeo Carne Alta Claro", sigla:"Alt: 2" },
+    { codigo:"1415537",  desc:"Líquido Rodeo Pollo Alta Oscuro",sigla:"Alt: 3" },
+    { codigo:"1415538",  desc:"Líquido Rodeo Pollo Alta Claro", sigla:"Alt: 2" },
+    { codigo:"1495502",  desc:"Glicerol / Glicerina" },
+    { codigo:"1512802",  desc:"Preblend Dentastix" },
+    { codigo:"1512803",  desc:"Preblend Rodeo" },
+    { codigo:"1119538",  desc:"Harina de vísceras" },
+    { codigo:"1125059",  desc:"Sulfato de Zinc" },
+    { codigo:"1192619",  desc:"Pollo ahumado líquido" },
+    { codigo:"1195499",  desc:"Caramelo en polvo" },
+    { codigo:"1504838",  desc:"Harina de carne y hueso" },
+    { codigo:"1522670",  desc:"SPF" },
+  ],
+  "Insumos de embalaje": [
+    { codigo:"1511258",  desc:"Esquinero de cartón 1080mm" },
+    { codigo:"1396483",  desc:"Esquinero de cartón prensado" },
+    { codigo:"1424960",  desc:"Etiqueta Dentastix y Rodeo 30x40" },
+    { codigo:"1520984",  desc:"Slip Sheet 560g/m2 1200x1000" },
+    { codigo:"5054112",  desc:"Rollo Cinta OPP 3M 48mm x1500 mts" },
+    { codigo:"1013444",  desc:"Stretch Manual (por kilo)" },
+    { codigo:"1003501",  desc:"Film Stretch 300% 28/30 micrones" },
+  ],
+  "Tintas y solventes": [
+    { codigo:"1427616",  desc:"Tinta Inkjet x500ml LINX FAC 91240" },
+    { codigo:"1264964",  desc:"Tinta Marsh Unicorn 20943 x 230 ml" },
+    { codigo:"1427619",  desc:"Solución Lavado Market-JETL400 A1X1000CC" },
+    { codigo:"1427617",  desc:"Solvente Inkjet x1000ml LINX FAC 91512" },
+  ],
+  "PT R26": [
+    { codigo:"10408479", desc:"Dentastix Pequeñas 2x20x15.7g (1) R24" },
+    { codigo:"10408482", desc:"Dentastix Pequeñas 2x10x47.1g (3) R24" },
+    { codigo:"10408485", desc:"Dentastix Pequeñas 2x8x109.9g (7) R24" },
+    { codigo:"10408488", desc:"Dentastix Medianas 2x18x25.7g (1) R24" },
+    { codigo:"10408490", desc:"Dentastix Medianas 2x10x77.1g (3) R24" },
+    { codigo:"10408492", desc:"Dentastix Medianas 2x8x179.9g (7) R24" },
+    { codigo:"10408495", desc:"Dentastix Grandes 2x18x38.5g (1) R24" },
+    { codigo:"10408498", desc:"Dentastix Grandes 2x10x115.5g (3) R24" },
+    { codigo:"10408501", desc:"Dentastix Grandes 2x7x270g (7) R24" },
+  ],
+  "Rework": [
+    { codigo: "4096830", desc:"RW Rodeo Carne"},
+    { codigo: "4096669", desc:"RW Rodeo Pollo"}
+  ]
+
+};function copiarCodigo(codigo) {
+  navigator.clipboard.writeText(codigo);
+  alert("Código copiado: " + codigo);
+}
+
+
+
+let selected = null;
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  if (name === 'datos') buildDatos();
+  if (name === 'codigos') buildCodigos();
+  if (name === 'harina') calcHarina();
+  if (name === 'carneyvisera') calcCYV();
+}
+
+function buildGrid() {
+  const g = document.getElementById('variety-grid');
+  VARIETIES.forEach(v => {
+    const b = document.createElement('button');
+    b.className = 'vbtn'; b.id = 'btn-' + v.id;
+    b.innerHTML = v.label + '<span class="vtag">' + v.tag + '</span>';
+    b.onclick = () => selectVariety(v.id);
+    g.appendChild(b);
+  });
+}
+
+function selectVariety(id) {
+  selected = VARIETIES.find(v => v.id === id);
+  document.querySelectorAll('.vbtn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + id).classList.add('active');
+  updateSpecs(); calc();
+}
+
+function updateSpecs() {
+  if (!selected) return;
+  document.getElementById('specs-pills').innerHTML =
+    `<span class="pill"><strong>${selected.kgBulto}</strong> kg/bulto</span>` +
+    `<span class="pill"><strong>${selected.kgPallet}</strong> kg/pallet</span>` +
+    `<span class="pill"><strong>${selected.bultosPallet}</strong> btos/pallet</span>` +
+    `<span class="pill"><strong>${selected.paqDisplay}</strong> paq/disp</span>`;
+}
+
+function fmt(n, dec=0) {
+  if (!isFinite(n) || isNaN(n) || n === 0) return '—';
+  return n.toLocaleString('es-AR', {minimumFractionDigits:dec, maximumFractionDigits:dec});
+}
+
+function calc() {
+  const kg = parseFloat(document.getElementById('inp-kg').value) || 0;
+  if (!selected || kg <= 0) { clearResults(); return; }
+  const bultos  = kg / selected.kgBulto;
+  const pallets = kg / selected.kgPallet;
+  const display = bultos * 2;
+  const carros  = kg / selected.kgCarro;
+  set('r-pallets', fmt(pallets,1), fmt(pallets * selected.kgPallet,0) + ' kg');
+  set('r-bultos',  fmt(bultos,0),  fmt(bultos / selected.bultosPallet,1) + ' pallets llenos');
+  set('r-display', fmt(display,0), 'bultos × 2');
+  set('r-carros',  fmt(carros,1),  selected.kgCarro + ' kg/carro');
+  document.getElementById('i-bobina').textContent    = selected.bobina ? fmt(bultos*selected.bobina,2)+' rollos' : '—';
+  document.getElementById('i-kf').textContent        = selected.kf     ? fmt(bultos*selected.kf,1)+' uds' : '—';
+  document.getElementById('i-tinta-inj').textContent = fmt(bultos*selected.tInj,3)+' l';
+  document.getElementById('i-tinta-mar').textContent = selected.tMar   ? fmt(bultos*selected.tMar,3)+' l' : '—';
+  document.getElementById('i-solvente').textContent  = selected.solv   ? fmt(bultos*selected.solv,3)+' l' : '—';
+}
+
+function set(id, val, sub) {
+  document.getElementById(id).textContent = val;
+  const s = document.getElementById(id+'-sub');
+  if (s) s.textContent = sub || '';
+}
+
+function clearResults() {
+  ['r-pallets','r-bultos','r-display','r-carros'].forEach(id => {
+    document.getElementById(id).textContent = '—';
+    const s = document.getElementById(id+'-sub');
+    if (s) s.textContent = ' ';
+  });
+  ['i-bobina','i-kf','i-tinta-inj','i-tinta-mar','i-solvente'].forEach(id => document.getElementById(id).textContent = '—');
+}
+
+function resetCalc() {
+  selected = null;
+  document.getElementById('inp-kg').value = '';
+  document.getElementById('specs-pills').innerHTML = '';
+  document.querySelectorAll('.vbtn').forEach(b => b.classList.remove('active'));
+  clearResults();
+}
+
+document.getElementById('inp-kg').addEventListener('input', calc);
+
+function buildDatos() {
+  const c = document.getElementById('datos-list');
+  c.innerHTML = '';
+  VARIETIES.forEach(v => {
+    const card = document.createElement('div');
+    card.className = 'datos-card';
+    card.innerHTML = `
+      <div class="datos-card-header" onclick="toggleDatos(this)">
+        <span>${v.label} <span class="datos-pill">${v.tag}</span></span>
+        <span class="datos-chevron">▼</span>
+      </div>
+      <div class="datos-body">
+        <div class="datos-row"><span class="dk">Kg por bulto</span><span class="dv">${v.kgBulto} kg</span></div>
+        <div class="datos-row"><span class="dk">Kg por pallet</span><span class="dv">${v.kgPallet} kg</span></div>
+        <div class="datos-row"><span class="dk">Bultos por pallet</span><span class="dv">${v.bultosPallet}</span></div>
+        <div class="datos-row"><span class="dk">Paquetes por display</span><span class="dv">${v.paqDisplay}</span></div>
+        <div class="datos-row"><span class="dk">Peso por carro</span><span class="dv">${v.kgCarro} kg</span></div>
+        <div class="datos-row"><span class="dk">KF por bulto</span><span class="dv">${v.kf || '—'}</span></div>
+        <div class="datos-row"><span class="dk">Bobina por bulto</span><span class="dv">${v.bobina}</span></div>
+      </div>`;
+    c.appendChild(card);
+  });
+}
+
+function toggleDatos(header) {
+  header.parentElement.classList.toggle('open');
+}
+
+function calcHarina() {
+  const batch  = parseFloat(document.getElementById('h-batch').value)  || 0;
+  const kgh    = parseFloat(document.getElementById('h-kgh').value)    || 200;
+  const hna    = parseFloat(document.getElementById('h-hna').value)    || 126;
+  const bunker = parseFloat(document.getElementById('h-bunker').value) || 0;
+
+  // Tabla 1 — solo batch
+  const kgHna1  = batch * 150;
+  const horas1  = hna > 0 ? kgHna1 / hna : 0;
+  const kgTotal1 = kgh * horas1;
+  const kgHora1  = kgh * (hna > 0 ? 150 / hna : 0);
+
+  setH('h-res-kghna',   kgHna1,   1);
+  setH('h-res-hs',      horas1,   2);
+  setH('h-res-kgtotal', kgTotal1, 1);
+  setH('h-res-kphora',  kgHora1,  1);
+
+  // Tabla 2 — batch + bunker
+  const kgHna2   = kgHna1 + bunker;
+  const horas2   = hna > 0 ? kgHna2 / hna : 0;
+  const kgTotal2 = kgh * horas2;
+  const diff     = kgTotal2 - kgTotal1;
+
+  setH('h-res2-kghna',   kgHna2,   1);
+  setH('h-res2-hs',      horas2,   2);
+  setH('h-res2-kgtotal', kgTotal2, 1);
+  setH('h-res2-diff',    diff,     1);
+}
+
+function setH(id, val, dec) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = (val === 0) ? '—' : val.toLocaleString('es-AR', {minimumFractionDigits:dec, maximumFractionDigits:dec});
+}
+
+function resetHarina() {
+  document.getElementById('h-batch').value  = 0;
+  document.getElementById('h-kgh').value    = 200;
+  document.getElementById('h-hna').value    = 126;
+  document.getElementById('h-bunker').value = 0;
+  calcHarina();
+}
+
+let isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+function toggleTheme() {
+  isDark = !isDark;
+  document.documentElement.classList.toggle('dark', isDark);
+  document.documentElement.classList.toggle('light', !isDark);
+  const icon = isDark ? '☀️' : '🌙';
+  const btnTop = document.getElementById('theme-btn-top');
+  const btnCod = document.getElementById('theme-btn');
+  if (btnTop) btnTop.textContent = icon;
+  if (btnCod) btnCod.textContent = icon + (isDark ? ' Claro' : ' Oscuro');
+}
+
+function fmtKg(n) {
+  if (!n || n === 0) return '—';
+  return n.toLocaleString('es-AR', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' kg';
+}
+
+function calcCYV() {
+  // Rodeo Carne — input: kg totales, A5=210 fijo
+  const rcKg = parseFloat(document.getElementById('rc-kg').value) || 0;
+  document.getElementById('rc-plt').textContent        = rcKg > 0 ? fmtKg(rcKg / 210).replace(' kg',' plt') : '—';
+  document.getElementById('rc-liq-baja').textContent   = fmtKg(rcKg * 0.214);
+  document.getElementById('rc-liq-osc').textContent    = fmtKg(rcKg * 0.048);
+  document.getElementById('rc-liq-blanc').textContent  = fmtKg(rcKg * 0.048);
+  document.getElementById('rc-hna').textContent        = fmtKg(rcKg * 0.015);
+  document.getElementById('rc-preblend').textContent   = fmtKg(rcKg * 0.618);
+  document.getElementById('rc-spf').textContent        = fmtKg(rcKg * 0.02);
+  document.getElementById('rc-palatant').textContent   = fmtKg(rcKg * 0.02);
+
+  // Rodeo Pollo — input: kg totales, A14=210 fijo
+  const rpKg = parseFloat(document.getElementById('rp-kg').value) || 0;
+  document.getElementById('rp-plt').textContent        = rpKg > 0 ? fmtKg(rpKg / 210).replace(' kg',' plt') : '—';
+  document.getElementById('rp-hna-vis').textContent    = fmtKg(rpKg * 0.015);
+  document.getElementById('rp-liq-baja').textContent   = fmtKg(rpKg * 0.214);
+  document.getElementById('rp-liq-osc').textContent    = fmtKg(rpKg * 0.048);
+  document.getElementById('rp-liq-liv').textContent    = fmtKg(rpKg * 0.048);
+  document.getElementById('rp-preblend').textContent   = fmtKg(rpKg * 0.618);
+  document.getElementById('rp-coating').textContent    = fmtKg(rpKg * 0.02);
+  document.getElementById('rp-palatant').textContent   = fmtKg(rpKg * 0.02);
+
+  // KF Dentastix — input: kg totales KF (col H = F6*J_)
+  const kfKg = parseFloat(document.getElementById('kf-kg').value) || 0;
+  document.getElementById('kf-zinc').textContent           = fmtKg(kfKg * 0.001);
+  document.getElementById('kf-mix-liq').textContent        = fmtKg(kfKg * 0.198);
+  document.getElementById('kf-preblend').textContent       = fmtKg(kfKg * 0.776);
+  document.getElementById('kf-preblend-micro').textContent = fmtKg(kfKg * 0.042);
+
+  // Dentastix Mix de Líquidos — input: kg totales Mix (col H = F15*J_)
+  const dmKg = parseFloat(document.getElementById('dm-kg').value) || 0;
+  document.getElementById('dm-pollo').textContent     = fmtKg(dmKg * 0.002);
+  document.getElementById('dm-caramelo').textContent  = fmtKg(dmKg * 0.003);
+  document.getElementById('dm-glicerina').textContent = fmtKg(dmKg * 0.732);
+}
+
+function resetCYV() {
+  ['rc-kg','rp-kg','kf-kg','dm-kg'].forEach(id => document.getElementById(id).value = 0);
+  calcCYV();
+}
+
+function copyResultsCalc() {
+  if (!selected) return;
+  const kg = document.getElementById('inp-kg').value;
+  const lines = [
+    '📦 Producción — ' + selected.label,
+    'KG: ' + kg,
+    'Pallets: ' + document.getElementById('r-pallets').textContent,
+    'Bultos: ' + document.getElementById('r-bultos').textContent,
+    'Display: ' + document.getElementById('r-display').textContent,
+    'Carros: ' + document.getElementById('r-carros').textContent,
+    '— Insumos —',
+    'Bobina: ' + document.getElementById('i-bobina').textContent,
+    'KF: ' + document.getElementById('i-kf').textContent,
+    'Tinta inkjet: ' + document.getElementById('i-tinta-inj').textContent,
+    'Tinta marsh: ' + document.getElementById('i-tinta-mar').textContent,
+    'Solvente: ' + document.getElementById('i-solvente').textContent,
+  ];
+  navigator.clipboard.writeText(lines.join('\n')).then(() => {
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✓ Copiado!';
+    setTimeout(() => btn.textContent = 'Copiar resultados', 2000);
+  });
+}
+
+// ── CODIGOS CUSTOM (localStorage) ──────────────────────────────
+let customCodigos = JSON.parse(localStorage.getItem('custom_codigos') || '{}');
+
+function saveCustomCodigos() {
+  localStorage.setItem('custom_codigos', JSON.stringify(customCodigos));
+}
+
+function getAllCodigos() {
+  const merged = JSON.parse(JSON.stringify(CODIGOS));
+  Object.entries(customCodigos).forEach(([grupo, items]) => {
+    if (!merged[grupo]) merged[grupo] = [];
+    items.forEach(item => {
+      const idx = merged[grupo].findIndex(i => i.codigo === item.codigo);
+      if (idx >= 0) merged[grupo][idx] = item;
+      else merged[grupo].push(item);
+    });
+  });
+  // Remove deleted
+  const deleted = JSON.parse(localStorage.getItem('deleted_codigos') || '[]');
+  Object.keys(merged).forEach(grupo => {
+    merged[grupo] = merged[grupo].filter(i => !deleted.includes(i.codigo));
+  });
+  return merged;
+}
+
+function buildCodigos(filter='') {
+  const all = getAllCodigos();
+  const c = document.getElementById('codigos-list');
+  const q = filter.toLowerCase().trim();
+  let html2 = '';
+  let total = 0;
+  Object.entries(all).forEach(([grupo, items]) => {
+    const filtered = q ? items.filter(i =>
+      i.codigo.includes(q) || i.desc.toLowerCase().includes(q) || (i.sigla||'').toLowerCase().includes(q)
+    ) : items;
+    if (!filtered.length) return;
+    total += filtered.length;
+    html2 += `<div class="cod-group"><div class="cod-group-title">${grupo}</div><div class="cod-card">`;
+    filtered.forEach(i => {
+      html2 += `<div class="cod-row">
+        <span class="cod-desc">${i.desc}${i.sigla ? ' <span class="cod-sigla">'+i.sigla+'</span>' : ''}</span>
+<span class="cod-num" onclick="copiarCodigo(this, '${i.codigo}')" style="cursor:pointer" title="Tocar para copiar">${i.codigo}</span>      </div>`;
+    });
+    html2 += `</div></div>`;
+  });
+  if (!total) html2 = '<div class="empty-search">Sin resultados</div>';
+  c.innerHTML = html2;
+}
+function copiarCodigo(el, codigo) {
+  navigator.clipboard.writeText(codigo).then(() => {
+    const original = el.textContent;
+    el.textContent = '✓ Copiado';
+    el.style.background = '#16a34a';
+    setTimeout(() => {
+      el.textContent = original;
+      el.style.background = '';
+    }, 1500);
+  });
+}
+function filterCodigos() {
+  buildCodigos(document.getElementById('cod-search').value);
+}
+
+function switchMgrTab(tab, btn) {
+  document.querySelectorAll('.mgr-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('mgr-agregar').style.display = tab === 'agregar' ? 'block' : 'none';
+  document.getElementById('mgr-editar').style.display  = tab === 'editar'  ? 'block' : 'none';
+}
+
+document.addEventListener('change', function(e) {
+  if (e.target.id === 'mgr-grupo') {
+    document.getElementById('mgr-nuevo-grupo-wrap').style.display =
+      e.target.value === '— Nuevo grupo —' ? 'block' : 'none';
+  }
+});
+
+function agregarCodigo() {
+  let grupo = document.getElementById('mgr-grupo').value;
+  if (grupo === '— Nuevo grupo —') {
+    grupo = document.getElementById('mgr-nuevo-grupo').value.trim();
+    if (!grupo) { alert('Escribí el nombre del grupo'); return; }
+  }
+  const codigo = document.getElementById('mgr-codigo').value.trim();
+  const desc   = document.getElementById('mgr-desc').value.trim();
+  const sigla  = document.getElementById('mgr-sigla').value.trim();
+  if (!codigo || !desc) { alert('Completá código y descripción'); return; }
+  if (!customCodigos[grupo]) customCodigos[grupo] = [];
+  customCodigos[grupo].push({ codigo, desc, sigla: sigla || undefined });
+  saveCustomCodigos();
+  document.getElementById('mgr-codigo').value = '';
+  document.getElementById('mgr-desc').value   = '';
+  document.getElementById('mgr-sigla').value  = '';
+  buildCodigos();
+  const btn = document.querySelector('.mgr-save-btn');
+  btn.textContent = '✓ Agregado!';
+  setTimeout(() => btn.textContent = 'Agregar código', 2000);
+}
+
+function buscarParaEditar() {
+  const q = document.getElementById('mgr-buscar-edit').value.toLowerCase().trim();
+  const all = getAllCodigos();
+  const results = [];
+  Object.entries(all).forEach(([grupo, items]) => {
+    items.forEach(item => {
+      if (!q || item.codigo.includes(q) || item.desc.toLowerCase().includes(q))
+        results.push({ ...item, grupo });
+    });
+  });
+  const c = document.getElementById('mgr-edit-results');
+  if (!results.length) { c.innerHTML = '<div style="font-size:13px;color:var(--text3);padding:10px 0">Sin resultados</div>'; return; }
+  c.innerHTML = results.slice(0,15).map(item => `
+    <div class="mgr-edit-item">
+      <div class="mgr-edit-info">
+        <div class="mgr-edit-desc">${item.desc}</div>
+        <div class="mgr-edit-code">${item.codigo} · ${item.grupo}</div>
+      </div>
+      <button class="mgr-edit-btn" onclick="editarCodigo('${item.codigo}','${item.grupo}')">Editar</button>
+      <button class="mgr-del-btn" onclick="borrarCodigo('${item.codigo}','${item.grupo}',this)">✕</button>
+    </div>`).join('');
+    
+}
+
+function borrarCodigo(codigo, grupo, btn) {
+  if (!confirm('¿Borrar ' + codigo + '?')) return;
+  // Mark as deleted
+  const deleted = JSON.parse(localStorage.getItem('deleted_codigos') || '[]');
+  deleted.push(codigo);
+  localStorage.setItem('deleted_codigos', JSON.stringify(deleted));
+  // Also remove from custom if exists
+  if (customCodigos[grupo]) {
+    customCodigos[grupo] = customCodigos[grupo].filter(i => i.codigo !== codigo);
+    saveCustomCodigos();
+  }
+  btn.closest('.mgr-edit-item').remove();
+  buildCodigos();
+}
+
+function editarCodigo(codigo, grupo) {
+  const all = getAllCodigos();
+  const item = all[grupo]?.find(i => i.codigo === codigo);
+  if (!item) return;
+  document.getElementById('mgr-grupo').value = grupo;
+  document.getElementById('mgr-codigo').value = item.codigo;
+  document.getElementById('mgr-desc').value   = item.desc;
+  document.getElementById('mgr-sigla').value  = item.sigla || '';
+  switchMgrTab('agregar', document.querySelector('.mgr-tab'));
+  // Delete old before re-adding
+  const deleted = JSON.parse(localStorage.getItem('deleted_codigos') || '[]');
+  deleted.push(codigo);
+  localStorage.setItem('deleted_codigos', JSON.stringify(deleted));
+  if (customCodigos[grupo]) {
+    customCodigos[grupo] = customCodigos[grupo].filter(i => i.codigo !== codigo);
+    saveCustomCodigos();
+    
+  }
+  buildCodigos();
+  
+}
+
+// ── HARINA PERSISTENCE ──────────────────────────────────────────
+function saveHarinaPrefs() {
+  localStorage.setItem('harina_kgh',   document.getElementById('h-kgh').value);
+  localStorage.setItem('harina_hna',   document.getElementById('h-hna').value);
+}
+
+function loadHarinaPrefs() {
+  const kgh = localStorage.getItem('harina_kgh');
+  const hna = localStorage.getItem('harina_hna');
+  if (kgh) document.getElementById('h-kgh').value = kgh;
+  if (hna) document.getElementById('h-hna').value = hna;
+}
+
+buildGrid();
+loadHarinaPrefs();
+buildCodigos();
+buildCodigos();
+</script>
+</body>
+</html>
